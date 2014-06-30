@@ -15,7 +15,6 @@ import com.vaadin.data.util.BeanItemContainer;
 public class PersonContainer extends BeanItemContainer<Person> implements
 		Serializable {
 
-
 	/**
 	 * Natural property order for Person bean. Used in tables and forms.
 	 */
@@ -27,9 +26,12 @@ public class PersonContainer extends BeanItemContainer<Person> implements
 	 * "Human readable" captions for properties in same order as in
 	 * NATURAL_COL_ORDER.
 	 */
+	// public static final String[] COL_HEADERS_ENGLISH = new String[] {
+	// "姓", "名", "邮箱", "电话",
+	// "街道", "邮编", "城市" };
 	public static final String[] COL_HEADERS_ENGLISH = new String[] {
-			"姓", "名", "邮箱", "电话",
-			"街道", "邮编", "城市" };
+			"First name", "Last name", "Email", "Phone number",
+			"Street Address", "Postal Code", "City" };
 
 	public PersonContainer() throws InstantiationException,
 			IllegalAccessException {
@@ -97,6 +99,5 @@ public class PersonContainer extends BeanItemContainer<Person> implements
 
 		return c;
 	}
-
 
 }

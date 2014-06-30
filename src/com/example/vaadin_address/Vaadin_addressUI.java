@@ -1,20 +1,33 @@
 package com.example.vaadin_address;
 
 import com.example.vaadin_address.data.PersonContainer;
+import com.example.vaadin_address.data.SearchFilter;
 import com.example.vaadin_address.ui.LeftNavigationTree;
 import com.example.vaadin_address.ui.RightListView;
 import com.example.vaadin_address.ui.RightPersonForm;
 import com.example.vaadin_address.ui.RightPersonList;
+import com.example.vaadin_address.ui.mainview.SearchView;
 import com.example.vaadin_address.ui.toolbar.HelpWindow;
 import com.example.vaadin_address.ui.toolbar.SharingOptions;
 import com.vaadin.annotations.Theme;
+import com.vaadin.data.Item;
+import com.vaadin.data.Property;
+import com.vaadin.data.Property.ValueChangeEvent;
+import com.vaadin.data.Property.ValueChangeListener;
+import com.vaadin.event.ItemClickEvent;
+import com.vaadin.event.ItemClickEvent.ItemClickListener;
+import com.vaadin.server.ThemeResource;
 import com.vaadin.server.VaadinRequest;
+import com.vaadin.ui.Alignment;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.Button.ClickEvent;
+import com.vaadin.ui.Button.ClickListener;
 import com.vaadin.ui.Component;
+import com.vaadin.ui.Embedded;
 import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.HorizontalSplitPanel;
 import com.vaadin.ui.Label;
+import com.vaadin.annotations.Title;
 import com.vaadin.ui.UI;
 import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.Window;
@@ -28,47 +41,38 @@ import com.vaadin.ui.Window;
  * @author lililiu
  * 
  */
+@Title("地址簿实例")
 @SuppressWarnings("serial")
-@Theme("vaadin_address")
-public class Vaadin_addressUI extends UI {
+//@Theme("vaadin_address")   //前期设计页面，把样式去掉
+public class Vaadin_addressUI extends UI implements ClickListener,ValueChangeListener,ItemClickListener{
 	// 定义界面使用到得组件
 	// --------------顶部工具栏组件-----------------------------
-	private Button newContact = new Button("新增");
-	private Button search = new Button("查询");
-	private Button share = new Button("分享");
+	private Button newContact = new Button("Add contact");
+	private Button search = new Button("Search");
+	private Button share = new Button("Share");
 	private Button help = new Button("帮助");
-	
-	private HelpWindow helpWindow = null;        //创造子窗口
-	private SharingOptions sharingWindow = null; //分享子窗口
-	
+
+	private HelpWindow helpWindow = null; // 创造子窗口
+	private SharingOptions sharingWindow = null; // 分享子窗口
+
 	// ---------------中间分割面板--------------------------------
 	private HorizontalSplitPanel horizontalSplit = new HorizontalSplitPanel();
 	private LeftNavigationTree tree = new LeftNavigationTree(); // 左侧
 	private RightListView listView = null; // 这里数据较多，延迟创建
 	private RightPersonList personList = null; // 列表
 	private RightPersonForm personForm = null; // 延迟创建
-	
+
 	// ---------------表格数据绑定--------------------------------
-	//该对象通过 UI 类传递给 表格类 RightPersonList
+	// 该对象通过 UI 类传递给 表格类 RightPersonList
 	private PersonContainer dataSource = PersonContainer.createWithTestData();
-	
+
+	//-----------------导航控制的页面--------------------------
+	private SearchView searchView = null;  //搜索页面
 	
 	
 	@Override
 	protected void init(VaadinRequest request) {
 		this.buildMainLayout();
-
-		// final VerticalLayout layout = new VerticalLayout();
-		// layout.setMargin(true);
-		// setContent(layout);
-		//
-		// Button button = new Button("Click Me");
-		// button.addClickListener(new Button.ClickListener() {
-		// public void buttonClick(ClickEvent event) {
-		// layout.addComponent(new Label("Thank you for clicking"));
-		// }
-		// });
-		// layout.addComponent(button);
 	}
 
 	/**
@@ -91,6 +95,8 @@ public class Vaadin_addressUI extends UI {
 		// 增加右侧列表视图
 		this.setMainComponent(getListView()); // 右侧
 
+		//375
+		
 		// 把默认得 垂直布局添加到当前 UI 中
 		this.setContent(layout);
 	}
@@ -102,37 +108,38 @@ public class Vaadin_addressUI extends UI {
 	 */
 	public HorizontalLayout createToolbar() {
 		HorizontalLayout lo = new HorizontalLayout();
-
-		// 工具栏按钮事件
-		help.addClickListener(new Button.ClickListener() {
-			public void buttonClick(ClickEvent event) {
-				UI.getCurrent().addWindow(getHelpWindow());
-			}
-			public HelpWindow getHelpWindow() {
-				if (helpWindow == null) {
-					helpWindow = new HelpWindow();
-				}
-				return helpWindow;
-			}
-		});
 		
-		share.addClickListener(new Button.ClickListener() {
-			public void buttonClick(ClickEvent event) {
-				UI.getCurrent().addWindow(this.getSharingWindow());
-			}
-			
-			public SharingOptions getSharingWindow() {
-				if (sharingWindow == null) {
-					sharingWindow = new SharingOptions();
-				}
-				return sharingWindow;
-			}
-		});
-
 		lo.addComponent(newContact);
 		lo.addComponent(search);
 		lo.addComponent(share);
 		lo.addComponent(help);
+
+		//绑定按钮监听器
+		help.addClickListener(this);
+		share.addClickListener(this);
+		search.addClickListener(this);
+		newContact.addClickListener(this);
+
+		//notif.setIcon(new ThemeResource("img/store.png"));
+		//美化按钮
+//		search.setIcon(new ThemeResource("icons/32/folder-add.png"));
+//		share.setIcon(new ThemeResource("icons/32/users.png"));
+//		help.setIcon(new ThemeResource("icons/32/help.png"));
+//		newContact.setIcon(new ThemeResource("icons/32/document-add.png"));
+//		
+//		lo.setMargin(true);  //Margin
+//		lo.setSpacing(true); //Padding
+//		
+//		lo.setStyleName("toolbar");
+//		lo.setWidth(100,Unit.PERCENTAGE);
+//		
+//		
+//		
+//		Embedded em = new Embedded("",new ThemeResource("images/logo.png"));
+//		lo.addComponent(em);
+//		lo.setComponentAlignment(em, Alignment.MIDDLE_RIGHT);
+//		lo.setExpandRatio(em, 1);
+		
 		return lo;
 	}
 
@@ -152,33 +159,110 @@ public class Vaadin_addressUI extends UI {
 	 */
 	private RightListView getListView() {
 		if (listView == null) {
-			personList = new RightPersonList(this);
+			//personList = new RightPersonList(); //不绑定数据源
+			personList = new RightPersonList(this); //绑定数据源头
 			personForm = new RightPersonForm();
 			// 到 listView 中绑定表单数据
 			listView = new RightListView(personList, personForm);
-
 		}
 		return listView;
 	}
-	
 
-	//-------------绑定数据方法---------------------------
+	public HelpWindow getHelpWindow() {
+		if (helpWindow == null) {
+			helpWindow = new HelpWindow();
+		}
+		return helpWindow;
+	}
+	
+	public SharingOptions getSharingWindow() {
+		if (sharingWindow == null) {
+			sharingWindow = new SharingOptions();
+		}
+		return sharingWindow;
+	}
+	
+	private void showHelpWindow(){
+		//this.setContent(this.getHelpWindow());
+		UI.getCurrent().addWindow(getHelpWindow());
+	}
+	
+	private void showShareWindow(){
+		//this.setContent(this.getSharingWindow());
+		UI.getCurrent().addWindow(getSharingWindow());
+	}
+	
+	private void showListView(){
+		this.setContent(this.getListView());
+	}
+	
+	private void addNewContanct(){
+		showListView();
+		//personForm.addContact();
+	}
+	
+	// -------------绑定数据方法---------------------------
 	public PersonContainer getDataSource() {
 		return dataSource;
 	}
 
-	
-	
-	
-	
+	// -------------导航到搜索页面的方法--------------------
+	private void showSearchView() {
+		// setMainComponent(getSearchView());
+		this.setContent(getSearchView());
+	}
 
-	
-	
-	
+	//lazy init searchView
+		public SearchView getSearchView() {
+			if (searchView == null) {
+				searchView = new SearchView(this);
+			}
+			return searchView;
+		}
 
-	
-	
-	
+	public void saveSearch(SearchFilter searchFilter){
+		tree.addItem(searchFilter);
+		tree.setParent(searchFilter,LeftNavigationTree.SEARCH);
+		// make the saved search  as a leaf(cannot have children)
+		tree.setChildrenAllowed(searchFilter, false);
+		// make sure "Search" is expanded
+		tree.expandItem(LeftNavigationTree.SEARCH);
+		// select the saved search
+		tree.setValue(searchFilter);
+	}
+
+	@Override
+	public void itemClick(ItemClickEvent event) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void valueChange(ValueChangeEvent event) {
+		Property property = event.getProperty();
+		if (property == personList) {
+			Item item = personList.getItem(personList.getValue());
+			//if (item != personForm.geti) {}		
+		
+		}
+	}
+
+	@Override
+	public void buttonClick(ClickEvent event) {
+		//
+		final Button source = event.getButton();
+		System.out.println("按钮点击事件.........");
+		if (source == search) {
+			this.showSearchView();
+		}else if (source == help) {
+			this.showHelpWindow();
+		}else if(source == share){
+			this.showShareWindow();
+		}else if (source == newContact) {
+			this.addNewContanct();
+		}
+		
+	}	
 	
 	
 	

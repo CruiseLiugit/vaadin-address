@@ -12,14 +12,18 @@ import com.vaadin.ui.Window;
  * 
  */
 public class HelpWindow extends Window {
-	private static final String HELP_HTML_SNIPPET = "This is "
-			+ "an application built during <strong><a href=\""
-			+ "http://dev.vaadin.com/\">Vaadin</a></strong> "
-			+ "tutorial. Hopefully it doesn't need any real help.";
+	private static final String HELP_HTML_SNIPPET = "这是程序帮助页面"
+			+ "为<strong><a href=\""
+			+ "http://www.liufuya.com/\">留夫鸭</a></strong> "
+			+ "公司创建的后台管理程序.";
 
 	public HelpWindow() {
-		setCaption("Address Book help");
+		setModal(true);  //遮罩层，不允许操作底部视图中的组件
+		setWidth("50%");
+		setCaption("地址簿帮助页面");
 		this.setContent(new Label(HELP_HTML_SNIPPET));
+		 center();  //居中显示
+	        
 	}
 
 	public HelpWindow(String caption) {
