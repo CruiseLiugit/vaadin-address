@@ -39,7 +39,6 @@ public class SearchFilter implements Serializable {
 	
 	
 	
-	
 }
 
 

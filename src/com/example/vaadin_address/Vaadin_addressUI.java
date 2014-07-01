@@ -45,8 +45,9 @@ import com.vaadin.ui.Window;
  */
 @Title("地址簿实例")
 @SuppressWarnings("serial")
-//@Theme("vaadin_address")   //前期设计页面，把样式去掉
-public class Vaadin_addressUI extends UI implements ClickListener,ValueChangeListener,ItemClickListener{
+// @Theme("vaadin_address") //前期设计页面，把样式去掉
+public class Vaadin_addressUI extends UI implements ClickListener,
+		ValueChangeListener {
 	// 定义界面使用到得组件
 	// --------------顶部工具栏组件-----------------------------
 	private Button newContact = new Button("Add contact");
@@ -68,16 +69,12 @@ public class Vaadin_addressUI extends UI implements ClickListener,ValueChangeLis
 	// 该对象通过 UI 类传递给 表格类 RightPersonList
 	private PersonContainer dataSource = PersonContainer.createWithTestData();
 
-	//表单字段
-    private PropertysetItem form_item = new PropertysetItem();
-    
-    
+	// 表单字段
+	private PropertysetItem form_item = new PropertysetItem();
 
-	
-	//-----------------导航控制的页面--------------------------
-	private SearchView searchView = null;  //搜索页面
-	
-	
+	// -----------------导航控制的页面--------------------------
+	private SearchView searchView = null; // 搜索页面
+
 	@Override
 	protected void init(VaadinRequest request) {
 		this.buildMainLayout();
@@ -103,8 +100,33 @@ public class Vaadin_addressUI extends UI implements ClickListener,ValueChangeLis
 		// 增加右侧列表视图
 		this.setMainComponent(getListView()); // 右侧
 
-		//375
-		
+		// 绑定左侧 tree 的监听器
+		tree.addItemClickListener(new ItemClickListener() {
+			@Override
+			public void itemClick(ItemClickEvent event) {
+				// TODO Auto-generated method stub
+				System.out.println("菜单点击......");
+				if (event.getSource() == tree) {
+					Object itemid = event.getItemId();
+					if (itemid != null) {
+						if (LeftNavigationTree.SHOW_ALL.equals(itemid)) {
+							// clear previous filters
+							getDataSource().removeAllContainerFilters();
+							System.out.println("点击  显示所有 菜单");
+							showListView();
+						} else if (LeftNavigationTree.SEARCH.equals(itemid)) {
+							System.out.println("点击  查询  菜单");
+							showSearchView();
+						} else if (itemid instanceof SearchFilter) {
+							search((SearchFilter) itemid);
+						}
+					}
+				}
+			}
+		});
+
+		// 375
+
 		// 把默认得 垂直布局添加到当前 UI 中
 		this.setContent(layout);
 	}
@@ -116,39 +138,38 @@ public class Vaadin_addressUI extends UI implements ClickListener,ValueChangeLis
 	 */
 	public HorizontalLayout createToolbar() {
 		HorizontalLayout lo = new HorizontalLayout();
-		
+
 		lo.addComponent(newContact);
 		lo.addComponent(search);
 		lo.addComponent(share);
 		lo.addComponent(help);
 
-		//绑定按钮监听器
+		// 绑定按钮监听器
 		help.addClickListener(this);
 		share.addClickListener(this);
 		search.addClickListener(this);
 		newContact.addClickListener(this);
-		
-		
-		//notif.setIcon(new ThemeResource("img/store.png"));
-		//美化按钮
-//		search.setIcon(new ThemeResource("icons/32/folder-add.png"));
-//		share.setIcon(new ThemeResource("icons/32/users.png"));
-//		help.setIcon(new ThemeResource("icons/32/help.png"));
-//		newContact.setIcon(new ThemeResource("icons/32/document-add.png"));
-//		
-//		lo.setMargin(true);  //Margin
-//		lo.setSpacing(true); //Padding
-//		
-//		lo.setStyleName("toolbar");
-//		lo.setWidth(100,Unit.PERCENTAGE);
-//		
-//		
-//		
-//		Embedded em = new Embedded("",new ThemeResource("images/logo.png"));
-//		lo.addComponent(em);
-//		lo.setComponentAlignment(em, Alignment.MIDDLE_RIGHT);
-//		lo.setExpandRatio(em, 1);
-		
+
+		// notif.setIcon(new ThemeResource("img/store.png"));
+		// 美化按钮
+		// search.setIcon(new ThemeResource("icons/32/folder-add.png"));
+		// share.setIcon(new ThemeResource("icons/32/users.png"));
+		// help.setIcon(new ThemeResource("icons/32/help.png"));
+		// newContact.setIcon(new ThemeResource("icons/32/document-add.png"));
+		//
+		// lo.setMargin(true); //Margin
+		// lo.setSpacing(true); //Padding
+		//
+		// lo.setStyleName("toolbar");
+		// lo.setWidth(100,Unit.PERCENTAGE);
+		//
+		//
+		//
+		// Embedded em = new Embedded("",new ThemeResource("images/logo.png"));
+		// lo.addComponent(em);
+		// lo.setComponentAlignment(em, Alignment.MIDDLE_RIGHT);
+		// lo.setExpandRatio(em, 1);
+
 		return lo;
 	}
 
@@ -168,22 +189,28 @@ public class Vaadin_addressUI extends UI implements ClickListener,ValueChangeLis
 	 */
 	private RightListView getListView() {
 		if (listView == null) {
-			//personList = new RightPersonList(); //不绑定数据源
-			personList = new RightPersonList(this); //绑定数据源
-			
-			form_item.addItemProperty("firstName", new ObjectProperty<String>("Qi"));
-			form_item.addItemProperty("lastName", new ObjectProperty<String>("Zhang"));
-			form_item.addItemProperty("phoneNumber", new ObjectProperty<String>("15922304938"));
-			form_item.addItemProperty("email", new ObjectProperty<String>("Zaphod@323.com"));
-			form_item.addItemProperty("streetAddress", new ObjectProperty<String>("花园路200号"));
-			form_item.addItemProperty("postalCode", new ObjectProperty<String>("215330"));
-			form_item.addItemProperty("city", new ObjectProperty<String>("请选择城市"));
-			//personForm = new RightPersonForm(); //简单表单
-			personForm = new RightPersonForm(this,form_item); //复杂表单
-			
-			
+			// personList = new RightPersonList(); //不绑定数据源
+			personList = new RightPersonList(this); // 绑定数据源
+
+			form_item.addItemProperty("firstName", new ObjectProperty<String>(
+					"Qi"));
+			form_item.addItemProperty("lastName", new ObjectProperty<String>(
+					"Zhang"));
+			form_item.addItemProperty("phoneNumber",
+					new ObjectProperty<String>("15922304938"));
+			form_item.addItemProperty("email", new ObjectProperty<String>(
+					"Zaphod@323.com"));
+			form_item.addItemProperty("streetAddress",
+					new ObjectProperty<String>("花园路200号"));
+			form_item.addItemProperty("postalCode", new ObjectProperty<String>(
+					"215330"));
+			form_item.addItemProperty("city", new ObjectProperty<String>(
+					"请选择城市"));
+			// personForm = new RightPersonForm(); //简单表单
+			personForm = new RightPersonForm(this, form_item); // 复杂表单
+
 			// 到 listView 中绑定表单数据
-			listView = new RightListView(personList, personForm);
+			listView = new RightListView(this, personList, personForm);
 		}
 		return listView;
 	}
@@ -194,33 +221,55 @@ public class Vaadin_addressUI extends UI implements ClickListener,ValueChangeLis
 		}
 		return helpWindow;
 	}
-	
+
 	public SharingOptions getSharingWindow() {
 		if (sharingWindow == null) {
 			sharingWindow = new SharingOptions();
 		}
 		return sharingWindow;
 	}
-	
-	private void showHelpWindow(){
-		//this.setContent(this.getHelpWindow());
+
+	private void showHelpWindow() {
+		// this.setContent(this.getHelpWindow());
 		UI.getCurrent().addWindow(getHelpWindow());
 	}
-	
-	private void showShareWindow(){
-		//this.setContent(this.getSharingWindow());
+
+	private void showShareWindow() {
+		// this.setContent(this.getSharingWindow());
 		UI.getCurrent().addWindow(getSharingWindow());
 	}
-	
-	private void showListView(){
-		this.setContent(this.getListView());
+
+	private void showListView() {
+		// personList = new RightPersonList(); //不绑定数据源
+		personList = new RightPersonList(this); // 绑定数据源
+
+		form_item
+				.addItemProperty("firstName", new ObjectProperty<String>("Qi"));
+		form_item.addItemProperty("lastName", new ObjectProperty<String>(
+				"Zhang"));
+		form_item.addItemProperty("phoneNumber", new ObjectProperty<String>(
+				"15922304938"));
+		form_item.addItemProperty("email", new ObjectProperty<String>(
+				"Zaphod@323.com"));
+		form_item.addItemProperty("streetAddress", new ObjectProperty<String>(
+				"花园路200号"));
+		form_item.addItemProperty("postalCode", new ObjectProperty<String>(
+				"215330"));
+		form_item.addItemProperty("city", new ObjectProperty<String>("请选择城市"));
+		// personForm = new RightPersonForm(); //简单表单
+		personForm = new RightPersonForm(this, form_item); // 复杂表单
+
+		
+		
+		listView.setFirstComponent(personList);
+		listView.setSecondComponent(personForm);
 	}
-	
-	private void addNewContanct(){
+
+	private void addNewContanct() {
 		showListView();
-		//personForm.addContact();
+		personForm.addContact();
 	}
-	
+
 	// -------------绑定数据方法---------------------------
 	public PersonContainer getDataSource() {
 		return dataSource;
@@ -229,21 +278,23 @@ public class Vaadin_addressUI extends UI implements ClickListener,ValueChangeLis
 	// -------------导航到搜索页面的方法--------------------
 	private void showSearchView() {
 		// setMainComponent(getSearchView());
-		this.setContent(getSearchView());
+		listView.setSecondComponent(getSearchView());
+		// this.setContent(getSearchView());
 	}
 
-	//lazy init searchView
-		public SearchView getSearchView() {
-			if (searchView == null) {
-				searchView = new SearchView(this);
-			}
-			return searchView;
+	// lazy init searchView
+	public SearchView getSearchView() {
+		if (searchView == null) {
+			searchView = new SearchView(this);
 		}
+		return searchView;
+	}
 
-	public void saveSearch(SearchFilter searchFilter){
+	public void saveSearch(SearchFilter searchFilter) {
+
 		tree.addItem(searchFilter);
-		tree.setParent(searchFilter,LeftNavigationTree.SEARCH);
-		// make the saved search  as a leaf(cannot have children)
+		tree.setParent(searchFilter, LeftNavigationTree.SEARCH);
+		// make the saved search as a leaf(cannot have children)
 		tree.setChildrenAllowed(searchFilter, false);
 		// make sure "Search" is expanded
 		tree.expandItem(LeftNavigationTree.SEARCH);
@@ -251,21 +302,13 @@ public class Vaadin_addressUI extends UI implements ClickListener,ValueChangeLis
 		tree.setValue(searchFilter);
 	}
 
-	/**
-	 * 左侧 tree 点击事件处理
-	 */
-	@Override
-	public void itemClick(ItemClickEvent event) {
-		if (event.getSource() == tree) {
-			Object itemid = event.getItemId();
-			if (itemid != null) {
-				if (LeftNavigationTree.SHOW_ALL.equals(itemid)) {
-					this.showListView();
-				}else if(LeftNavigationTree.SEARCH.equals(itemid)){
-					this.showSearchView();
-				}
-			}
-		}
+	public void search(SearchFilter searchFilter) {
+		// clear previous filters
+		this.getDataSource().removeAllContainerFilters();
+		// filter contacts with given filter
+		this.getDataSource().addContainerFilter(searchFilter.getPropertyId(),
+				searchFilter.getTerm(), true, false);
+		this.showListView();
 	}
 
 	@Override
@@ -273,9 +316,9 @@ public class Vaadin_addressUI extends UI implements ClickListener,ValueChangeLis
 		Property property = event.getProperty();
 		if (property == personList) {
 			Item item = personList.getItem(personList.getValue());
-			//这里没有写完
-			//if (item != personForm.geti) {}		
-		
+			// 这里没有写完
+			// if (item != personForm.geti) {}
+
 		}
 	}
 
@@ -286,16 +329,14 @@ public class Vaadin_addressUI extends UI implements ClickListener,ValueChangeLis
 		System.out.println("按钮点击事件.........");
 		if (source == search) {
 			this.showSearchView();
-		}else if (source == help) {
+		} else if (source == help) {
 			this.showHelpWindow();
-		}else if(source == share){
+		} else if (source == share) {
 			this.showShareWindow();
-		}else if (source == newContact) {
+		} else if (source == newContact) {
 			this.addNewContanct();
 		}
-		
-	}	
-	
-	
-	
+
+	}
+
 }

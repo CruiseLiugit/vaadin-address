@@ -35,7 +35,7 @@ public class SearchView extends Panel {
 		// TODO Auto-generated constructor stub
 	}
 	
-	public SearchView(final Vaadin_addressUI ui) {
+	public SearchView(Vaadin_addressUI ui) {
 		this.app = ui;
 		addStyleName("view");
 		
@@ -45,7 +45,7 @@ public class SearchView extends Panel {
 		
 		//使用 FormLayout 作为本 Panel 的主布局
 		FormLayout formLayout = new FormLayout();
-		//setLayout(formLayout);
+		setContent(formLayout);
 		
 		//创建 UI Components
 		tf = new TextField("查询");
@@ -67,7 +67,7 @@ public class SearchView extends Panel {
 		}
 		
 		fieldToSearch.setValue("lastName");   //placeholder 占位符
-		fieldToSearch.setNullSelectionAllowed(false); //
+		fieldToSearch.setNullSelectionAllowed(false); //不允许为空
 		
 		//init save checkbox
 		saveSearch.setValue(true);
@@ -76,17 +76,17 @@ public class SearchView extends Panel {
 		saveSearch.addFocusListener(new FocusListener(){
 			@Override
 			public void focus(FocusEvent event) {
-				searchName.setVisible(((CheckBox)event.getComponent()).getValue()); 
+				searchName.setVisible(((CheckBox)event.getComponent()).getValue());
 			}
 		});
 		
 		
 		//把所有的组件，添加到 表单中
-		setContent(tf);
-		setContent(fieldToSearch);
-		setContent(saveSearch);
-		setContent(searchName);
-		setContent(search);
+		formLayout.addComponent(tf);
+		formLayout.addComponent(fieldToSearch);
+		formLayout.addComponent(saveSearch);
+		formLayout.addComponent(searchName);
+		formLayout.addComponent(search);
 	}
 
 	private void performSearch(){
@@ -106,7 +106,7 @@ public class SearchView extends Panel {
 			app.saveSearch(searchFilter);
 		}
 		
-		app.saveSearch(searchFilter);
+		app.search(searchFilter);
 	}
 	
 	
