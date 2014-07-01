@@ -57,6 +57,7 @@ public class RightPersonList extends Table {
 		this.setNullSelectionAllowed(false);
 		
 		//customize email column to have mailto: links using column generator
+		//调整邮箱使用体验，点击邮箱   打开 邮件App
 		this.addGeneratedColumn("email", new ColumnGenerator(){
 			@Override
 			public Object generateCell(Table source, Object itemId,

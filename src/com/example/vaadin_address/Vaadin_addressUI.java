@@ -18,8 +18,10 @@ import com.vaadin.data.util.ObjectProperty;
 import com.vaadin.data.util.PropertysetItem;
 import com.vaadin.event.ItemClickEvent;
 import com.vaadin.event.ItemClickEvent.ItemClickListener;
+import com.vaadin.server.Page;
 import com.vaadin.server.ThemeResource;
 import com.vaadin.server.VaadinRequest;
+import com.vaadin.shared.Position;
 import com.vaadin.ui.Alignment;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.Button.ClickEvent;
@@ -29,6 +31,8 @@ import com.vaadin.ui.Embedded;
 import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.HorizontalSplitPanel;
 import com.vaadin.ui.Label;
+import com.vaadin.ui.Notification;
+import com.vaadin.ui.Notification.Type;
 import com.vaadin.annotations.Title;
 import com.vaadin.ui.UI;
 import com.vaadin.ui.VerticalLayout;
@@ -45,7 +49,7 @@ import com.vaadin.ui.Window;
  */
 @Title("地址簿实例")
 @SuppressWarnings("serial")
-// @Theme("vaadin_address") //前期设计页面，把样式去掉
+//@Theme("vaadin_address") //前期设计页面，把样式去掉
 public class Vaadin_addressUI extends UI implements ClickListener,
 		ValueChangeListener {
 	// 定义界面使用到得组件
@@ -277,7 +281,18 @@ public class Vaadin_addressUI extends UI implements ClickListener,
 
 	// -------------导航到搜索页面的方法--------------------
 	private void showSearchView() {
-		// setMainComponent(getSearchView());
+		//通知
+		Notification notif = new Notification("提醒",
+				"<br />可以按照 姓名、邮箱、电话等条件搜索", Notification.Type.WARNING_MESSAGE);
+		// 自定义通知属性
+		notif.setDelayMsec(2000); // 延迟事件 2 秒
+		notif.setPosition(Position.BOTTOM_RIGHT);// 位置
+		//notif.setStyleName("vaadin7");
+		notif.setIcon(new ThemeResource("icons/32/note.png"));
+		// 显示通知
+		notif.show(Page.getCurrent());
+		
+		//
 		listView.setSecondComponent(getSearchView());
 		// this.setContent(getSearchView());
 	}
