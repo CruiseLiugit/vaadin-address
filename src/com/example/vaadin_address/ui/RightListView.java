@@ -28,10 +28,6 @@ public class RightListView extends VerticalSplitPanel {
 	public RightListView(){}
 
 	public RightListView(RightPersonList personlist , RightPersonForm personform) {
-		//绑定表单数据
-		//FieldGroup fgroup = new FieldGroup(new BeanItem<Person>(new Person("刘强","18944372839","客户")));
-		//fgroup.bindMemberFields(personform);
-		
 		//把右边界面组装好
 		this.setFirstComponent(personlist);
 		this.setSecondComponent(personform);

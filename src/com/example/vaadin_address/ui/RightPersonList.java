@@ -16,6 +16,9 @@ import com.vaadin.ui.Table;
  */
 public class RightPersonList extends Table {
 
+	/**
+	 * 基本模拟时使用
+	 */
 	public RightPersonList() {
 		// 创建一个默认的数据
 		// 定义两列 Property

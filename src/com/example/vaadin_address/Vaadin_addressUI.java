@@ -14,6 +14,8 @@ import com.vaadin.data.Item;
 import com.vaadin.data.Property;
 import com.vaadin.data.Property.ValueChangeEvent;
 import com.vaadin.data.Property.ValueChangeListener;
+import com.vaadin.data.util.ObjectProperty;
+import com.vaadin.data.util.PropertysetItem;
 import com.vaadin.event.ItemClickEvent;
 import com.vaadin.event.ItemClickEvent.ItemClickListener;
 import com.vaadin.server.ThemeResource;
@@ -66,6 +68,12 @@ public class Vaadin_addressUI extends UI implements ClickListener,ValueChangeLis
 	// 该对象通过 UI 类传递给 表格类 RightPersonList
 	private PersonContainer dataSource = PersonContainer.createWithTestData();
 
+	//表单字段
+    private PropertysetItem form_item = new PropertysetItem();
+    
+    
+
+	
 	//-----------------导航控制的页面--------------------------
 	private SearchView searchView = null;  //搜索页面
 	
@@ -119,7 +127,8 @@ public class Vaadin_addressUI extends UI implements ClickListener,ValueChangeLis
 		share.addClickListener(this);
 		search.addClickListener(this);
 		newContact.addClickListener(this);
-
+		
+		
 		//notif.setIcon(new ThemeResource("img/store.png"));
 		//美化按钮
 //		search.setIcon(new ThemeResource("icons/32/folder-add.png"));
@@ -160,8 +169,19 @@ public class Vaadin_addressUI extends UI implements ClickListener,ValueChangeLis
 	private RightListView getListView() {
 		if (listView == null) {
 			//personList = new RightPersonList(); //不绑定数据源
-			personList = new RightPersonList(this); //绑定数据源头
-			personForm = new RightPersonForm();
+			personList = new RightPersonList(this); //绑定数据源
+			
+			form_item.addItemProperty("firstName", new ObjectProperty<String>("Qi"));
+			form_item.addItemProperty("lastName", new ObjectProperty<String>("Zhang"));
+			form_item.addItemProperty("phoneNumber", new ObjectProperty<String>("15922304938"));
+			form_item.addItemProperty("email", new ObjectProperty<String>("Zaphod@323.com"));
+			form_item.addItemProperty("streetAddress", new ObjectProperty<String>("花园路200号"));
+			form_item.addItemProperty("postalCode", new ObjectProperty<String>("215330"));
+			form_item.addItemProperty("city", new ObjectProperty<String>("请选择城市"));
+			//personForm = new RightPersonForm(); //简单表单
+			personForm = new RightPersonForm(this,form_item); //复杂表单
+			
+			
 			// 到 listView 中绑定表单数据
 			listView = new RightListView(personList, personForm);
 		}
@@ -231,10 +251,21 @@ public class Vaadin_addressUI extends UI implements ClickListener,ValueChangeLis
 		tree.setValue(searchFilter);
 	}
 
+	/**
+	 * 左侧 tree 点击事件处理
+	 */
 	@Override
 	public void itemClick(ItemClickEvent event) {
-		// TODO Auto-generated method stub
-		
+		if (event.getSource() == tree) {
+			Object itemid = event.getItemId();
+			if (itemid != null) {
+				if (LeftNavigationTree.SHOW_ALL.equals(itemid)) {
+					this.showListView();
+				}else if(LeftNavigationTree.SEARCH.equals(itemid)){
+					this.showSearchView();
+				}
+			}
+		}
 	}
 
 	@Override
@@ -242,6 +273,7 @@ public class Vaadin_addressUI extends UI implements ClickListener,ValueChangeLis
 		Property property = event.getProperty();
 		if (property == personList) {
 			Item item = personList.getItem(personList.getValue());
+			//这里没有写完
 			//if (item != personForm.geti) {}		
 		
 		}
