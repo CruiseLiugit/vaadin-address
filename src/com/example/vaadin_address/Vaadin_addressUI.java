@@ -38,6 +38,10 @@ import com.vaadin.ui.UI;
 import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.Window;
 
+
+//导入官方提供的样式
+import com.vaadin.ui.themes.ChameleonTheme;
+
 /**
  * 按照 教程一步步完成得一个 地址簿 管理程序 内容由下面组件组成 Window VerticalLayout(window own)
  * HorizontalLayout(ToolBar) Button(Add Contact) Button(Search) Button(Share)
@@ -50,11 +54,12 @@ import com.vaadin.ui.Window;
 @Title("地址簿实例")
 @SuppressWarnings("serial")
 //@Theme("vaadin_address") //前期设计页面，把样式去掉
+@Theme("contacts")
 public class Vaadin_addressUI extends UI implements ClickListener,
 		ValueChangeListener {
 	// 定义界面使用到得组件
 	// --------------顶部工具栏组件-----------------------------
-	private Button newContact = new Button("Add contact");
+	private Button newContact = new Button("Add");
 	private Button search = new Button("Search");
 	private Button share = new Button("Share");
 	private Button help = new Button("帮助");
@@ -143,36 +148,43 @@ public class Vaadin_addressUI extends UI implements ClickListener,
 	public HorizontalLayout createToolbar() {
 		HorizontalLayout lo = new HorizontalLayout();
 
-		lo.addComponent(newContact);
-		lo.addComponent(search);
-		lo.addComponent(share);
-		lo.addComponent(help);
-
+		//美化按钮
+		//newContact.addStyleName(ChameleonTheme.BUTTON_BIG);
+		//newContact.addStyleName(ChameleonTheme.BUTTON_WIDE);
+		//newContact.addStyleName(ChameleonTheme.BUTTON_DEFAULT);
+		
 		// 绑定按钮监听器
 		help.addClickListener(this);
 		share.addClickListener(this);
 		search.addClickListener(this);
 		newContact.addClickListener(this);
 
-		// notif.setIcon(new ThemeResource("img/store.png"));
+		 //notif.setIcon(new ThemeResource("img/store.png"));
 		// 美化按钮
-		// search.setIcon(new ThemeResource("icons/32/folder-add.png"));
-		// share.setIcon(new ThemeResource("icons/32/users.png"));
-		// help.setIcon(new ThemeResource("icons/32/help.png"));
-		// newContact.setIcon(new ThemeResource("icons/32/document-add.png"));
-		//
-		// lo.setMargin(true); //Margin
-		// lo.setSpacing(true); //Padding
-		//
-		// lo.setStyleName("toolbar");
-		// lo.setWidth(100,Unit.PERCENTAGE);
-		//
-		//
-		//
-		// Embedded em = new Embedded("",new ThemeResource("images/logo.png"));
-		// lo.addComponent(em);
-		// lo.setComponentAlignment(em, Alignment.MIDDLE_RIGHT);
-		// lo.setExpandRatio(em, 1);
+		 search.setIcon(new ThemeResource("icons/32/folder-add.png"));
+		 share.setIcon(new ThemeResource("icons/32/users.png"));
+		 help.setIcon(new ThemeResource("icons/32/help.png"));
+		 newContact.setIcon(new ThemeResource("icons/32/document-add.png"));
+		
+		lo.addComponent(newContact);
+		lo.addComponent(search);
+		lo.addComponent(share);
+		lo.addComponent(help);
+
+		
+		 lo.setMargin(true); //Margin
+		 lo.setSpacing(true); //Padding
+		
+		 lo.setStyleName("toolbar");
+		 lo.setWidth(500,Unit.PIXELS);
+		 //lo.setWidth(100,Unit.PERCENTAGE);
+		
+		
+		
+		 Embedded em = new Embedded("",new ThemeResource("images/logo.png"));
+		 lo.addComponent(em);
+		 lo.setComponentAlignment(em, Alignment.MIDDLE_RIGHT);
+		 //lo.setExpandRatio(em, 1);
 
 		return lo;
 	}
